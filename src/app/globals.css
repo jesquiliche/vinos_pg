@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.text-shadow-title {
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7);
+}
+
+.menu_item {
+  @apply border-b border-gray-50;
+}
+
+.hover-line:hover {
+  @apply border-yellow-300;
+}
+.btn-primary {
+  @apply block bg-sky-950 hover:bg-sky-800 text-gray-50 font-bold p-2 w-full text-center rounded-md;
+}
+.form-control {
+  @apply border-gray-800 border-2 rounded-md mx-2;
+}
+
+.form-control {
+  @apply block bg-gray-200 text-gray-950 border-0 rounded-lg p-2 w-full;
+}

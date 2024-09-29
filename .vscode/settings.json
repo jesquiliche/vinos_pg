@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "plyconfig.json": "jsonc"
+    },
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3307,
+            "driver": "MySQL",
+            "name": "tienda",
+            "database": "next_vinos",
+            "username": "root"
+        }
+    ]
+}

@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model denominaciones {
+  id          BigInt      @id @default(autoincrement())
+  nombre      String      @unique @db.VarChar(255) // Nombre único
+  descripcion String?     @db.Text
+  created_at  DateTime?   @db.Timestamp(0)
+  updated_at  DateTime?   @db.Timestamp(0)
+  productos   productos[]
+}
+
+model productos {
+  id              BigInt         @id @default(autoincrement())
+  nombre          String         @unique @db.VarChar(255) // Nombre único
+  bodega          String?        @db.VarChar(255)
+  descripcion     String         @db.Text
+  maridaje        String         @db.Text
+  precio          Decimal        @db.Decimal(10, 2)
+  graduacion      Decimal        @db.Decimal(5, 2)
+  ano             Int?
+  sabor           String?        @db.VarChar(255)
+  tipo_id         BigInt
+  imagen          String         @db.VarChar(255)
+  denominacion_id BigInt
+  created_at      DateTime?      @db.Timestamp(0)
+  updated_at      DateTime?      @db.Timestamp(0)
+  destacado       String         @default("N")
+  oferta          String         @default("N")
+  stock           Int            @default(200)
+  denominaciones  denominaciones @relation(fields: [denominacion_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tipos           tipos          @relation(fields: [tipo_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([denominacion_id])
+  @@index([tipo_id])
+}
+
+model tipos {
+  id          BigInt      @id @default(autoincrement())
+  nombre      String      @unique @db.VarChar(255) // Nombre único
+  descripcion String?     @db.Text
+  created_at  DateTime?   @db.Timestamp(0)
+  updated_at  DateTime?   @db.Timestamp(0)
+  productos   productos[]
+}
+
+model users {
+  id                BigInt    @id @default(autoincrement())
+  userId            String    @unique @db.VarChar(255)
+  name              String    @unique @db.VarChar(255) // Nombre único
+  email             String    @unique @db.VarChar(255)
+  email_verified_at DateTime? @db.Timestamp(0)
+  password          String    @db.VarChar(255)
+  remember_token    String?   @db.VarChar(100)
+  created_at        DateTime? @db.Timestamp(0)
+  updated_at        DateTime? @db.Timestamp(0)
+
+  // Relación con Orden (un usuario puede tener varias órdenes)
+  ordenes Orden[] @relation("UserOrden")
+}
+
+model Orden {
+  id            BigInt  @id @default(autoincrement())
+  user_id       BigInt
+  userId        String
+  subtotal      Decimal @db.Decimal(8, 2)
+  total         Decimal @db.Decimal(8, 2)
+  iva           Decimal @db.Decimal(8, 2)
+  pagado        String  @db.VarChar(1)
+  entregado     String  @db.VarChar(1)
+  transactionId String? @db.VarChar(255)
+  articulos     Int
+
+  // Relación con users (una orden está asociada a un usuario)
+  user users @relation("UserOrden", fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Relación con Detalle
+  detalles Detalle[] @relation("OrdenADetalle")
+
+  @@map("ordenes")
+}
+
+model provincia {
+  id     BigInt @id @default(autoincrement())
+  codigo String @db.VarChar(2)
+  nombre String @unique @db.VarChar(100)
+}
+
+model poblacion {
+  id     BigInt @id @default(autoincrement())
+  codigo String @db.VarChar(5)
+  nombre String @unique @db.VarChar(100)
+}
+
+model Detalle {
+  id         BigInt  @id @default(autoincrement())
+  orden_id   BigInt
+  product_id BigInt
+  precio     Decimal @db.Decimal(8, 2)
+  cantidad   Int
+  imagen     String? @db.VarChar(255)
+  nombre     String? @db.VarChar(255)
+
+  // Relación con Orden
+  orden Orden @relation("OrdenADetalle", fields: [orden_id], references: [id], onDelete: Cascade) // Clave foránea con onDelete en cascada
+
+  @@map("detalles")
+}
+
+model Direccion {
+  id        BigInt  @id @default(autoincrement())
+  nombre    String  @db.VarChar(100)
+  apellidos String  @db.VarChar(150)
+  calle     String  @db.VarChar(150)
+  numero    String  @db.VarChar(5)
+  escalera  String? @db.VarChar(5)
+  piso      String? @db.VarChar(20)
+  puerta    String? @db.VarChar(5)
+  poblacion String  @db.VarChar(5)
+  provincia String  @db.VarChar(2)
+  user_id   BigInt
+  telefono  String  @db.VarChar(15)
+
+  @@map("direcciones")
+}
+
+model OrdenDireccion {
+  id        BigInt  @id @default(autoincrement())
+  nombre    String  @db.VarChar(100)
+  apellidos String  @db.VarChar(150)
+  calle     String  @db.VarChar(150)
+  numero    String  @db.VarChar(5)
+  escalera  String? @db.VarChar(5)
+  piso      String? @db.VarChar(20)
+  puerta    String? @db.VarChar(5)
+  poblacion String  @db.VarChar(5)
+  provincia String  @db.VarChar(2)
+  user_id   BigInt
+  userId    String
+  orden_id  BigInt
+  telefono  String  @db.VarChar(15)
+
+  @@map("orden_direcciones")
+}
