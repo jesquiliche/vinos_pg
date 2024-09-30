@@ -1,7 +1,7 @@
 "use server";
 
 import { ProductoDetalle } from "@/interfaces/Product";
-import { PrismaClient, productos,tipos } from "@prisma/client";
+import { PrismaClient, productos } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
