@@ -4,6 +4,7 @@ import { Address } from "@/interfaces/address";
 import { CartProduct } from "@/interfaces/Product";
 import { getProduct } from "./productos-actions";
 import { PrismaClient } from "@prisma/client";
+import { findUserByUserId} from "./users-actions"
 
 const prisma = new PrismaClient();
 
@@ -12,6 +13,8 @@ export async function StoreOrden(address: Address, cartProduct: CartProduct[]) {
 
   let total = 0;
   let articulos = 0;
+  const user= await findUserByUserId(address.userId);
+  console.log(user)
 
   try {
     // Calcular el total y la cantidad de artículos
@@ -29,9 +32,10 @@ export async function StoreOrden(address: Address, cartProduct: CartProduct[]) {
     // Iniciar una transacción
     const nuevaOrden = await prisma.$transaction(async (tx) => {
       // Crear la nueva orden
+      console.log(address)
       const orden = await tx.orden.create({
         data: {
-          user_id: BigInt(address.user_id), // Asegúrate de usar BigInt si es necesario
+          user_id: BigInt(user?.id || 0), // Asegúrate de usar BigInt si es necesario
           userId: address.userId, // Asegúrate de que 'userId' sea el nombre correcto
           subtotal: subtotal, // Decimal
           total: total, // Decimal

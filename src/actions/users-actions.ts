@@ -101,6 +101,15 @@ export async function findUserByEmail(email: string): Promise<User | null> {
   }
 }
 
+export async function findUserByUserId(userId: string): Promise<User | null> {
+  try {
+    return await prisma.users.findUnique({
+      where: { userId },
+    });
+  } catch (error) {
+    throw new Error('Error finding user: ');
+  }
+}
 
 
 
